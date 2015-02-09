@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 #include <fstream>
-//#include <iostream>
+#include <iostream>
 rating::rating(){
 	user_count=0;
 	item_count=0;
@@ -45,6 +45,7 @@ int rating::Init(const char* filepath){
 	//memset(timestamp,0,sizeof(int)*user_count*item_count);
 	fin.clear();
 	fin.seekg(0,std::ios::beg);
+	std::cout<<count<<std::endl;
 	while(!fin.eof()){
 		fin>>u_id>>i_id>>rt>>tm;
 		ratings[u_id-1][i_id-1]=rt;
@@ -59,14 +60,14 @@ int rating::Init(const char* filepath){
 }
 
 int rating::getRating(const int u_id,const int i_id) const{
-	if (!(u_id<user_count&&i_id<item_count))
+	if (!(u_id<=user_count&&i_id<=max_item))
 		return -1;
 	else
 		return ratings[u_id-1][i_id-1];
 }
 
 int rating::getTime(const int u_id,const int i_id) const{
-	if (!(u_id<user_count&&i_id<item_count))
+	if (!(u_id<=user_count&&i_id<=max_item))
 		return -1;
 	else
 		return timestamp[u_id-1][i_id-1];
@@ -77,7 +78,7 @@ int rating::getUsercount() const{
 }
 
 int rating::getItemcount() const{
-	return item_count;
+	return max_item;
 }
 
 rating::~rating(){
