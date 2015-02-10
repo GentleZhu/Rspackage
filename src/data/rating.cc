@@ -31,6 +31,7 @@ int rating::Init(const char* filepath){
 			item_id.insert(i_id);
 		++count;
 	}
+	rating_count=count;
 	user_count=user_id.size();
 	item_count=item_id.size();
 	ratings=new int*[user_count];
@@ -81,7 +82,12 @@ int rating::getItemcount() const{
 	return max_item;
 }
 
+int rating::getRatingcount() const{
+	return rating_count;
+}
+
 rating::~rating(){
+	//std::cout<<"should be last"<<std::endl;
 	user_id.clear();
 	item_id.clear();
 	for(int i=0;i<user_count;i++){

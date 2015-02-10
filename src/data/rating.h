@@ -10,10 +10,12 @@ public:
 	int getTime(const int u_id,const int i_id) const;
 	int getUsercount() const;
 	int getItemcount() const;
+	int getRatingcount() const;
 	~rating();
 private:
 	int user_count;
 	int item_count;
+	int rating_count;
 	int max_item;
 	int ratings_count;
 	std::set<int> user_id;

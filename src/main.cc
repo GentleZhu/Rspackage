@@ -5,8 +5,11 @@
 using namespace std;
 int main(int argc, char const *argv[])
 {
-	basicSolver* s=new basicMF("ua.base");
+	basicSolver* s=new basicMF("ua.base",32);
+	s->Init();
 	s->train();
+	s->predict("ua.test");
+	delete s;
 	//rating a=rating();
 	//cout<<a.Init("ua.base")<<endl;
 	//cout<<a.getUsercount()<<" "<<a.getItemcount()<<endl;
