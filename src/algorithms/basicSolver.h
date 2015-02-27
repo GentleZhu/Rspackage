@@ -8,7 +8,7 @@ public:
 	basicSolver(const char* inputFile);
 	virtual ~basicSolver();
 	virtual int train()=0;
-	virtual int predict(const char* inputFile) const=0;
+	virtual double predict(const char* inputFile) const=0;
 	virtual void load(const char* inputFile)=0;
 	virtual void save(const char* outputFile) const =0;
 	virtual void Init()=0;

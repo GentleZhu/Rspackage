@@ -10,7 +10,7 @@ public:
 	virtual ~basicMF();
 	virtual void Init();
 	virtual int train();
-	virtual int predict(const char* inputFile) const;
+	virtual double predict(const char* inputFile) const;
 	virtual void load(const char* inputFile);
 	virtual void save(const char* outputFile) const;
 private:

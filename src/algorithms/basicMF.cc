@@ -1,5 +1,6 @@
 #include "basicMF.h"
 #include "basicSolver.cc"
+//#include "basicSolver.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -7,10 +8,10 @@
 #include <fstream>
 #include <cstring>
 
-const double EPSIRON=0.1;
-const int MAXN=200;
+const double EPSIRON=0.05;
+const int MAXN=40;
 const double lamda=0.005;
-const double learning_rate=0.001;
+const double learning_rate=0.004;
 basicMF::basicMF(const char* inputFile,int n):num_fact(n),basicSolver(inputFile){
 	std::cout<<data->getUsercount()<<data->getItemcount()<<std::endl;
 }
@@ -74,7 +75,7 @@ double basicMF::calculate(int u_id,int i_id) const{
 	}*/
 	for (j=0;j<num_fact;j++)
 		//if (Item_feature[j][item]!=0&&User_feature[j][user]!=0)
-			pre+=Item_feature[i_id][j]*User_feature[u_id][j];
+			pre+=Item_feature[i_id][j]*User_feature[u_id][j]; //transpose will get better local performance
 	if (pre>5) pre=5;
 	if (pre<1) pre=1;
 	return pre;
@@ -89,7 +90,7 @@ int basicMF::train(){
 	int maxj=data->getItemcount();
 	int count=data->getRatingcount();
 	double err_1=999,err_2=1000;
-	while(epoch<MAXN&&fabs(err_1-err_2)>0.00001){
+	while(epoch<MAXN&&err_2-err_1>0.00001){
 		err_2=err_1;
 		err_1=0;
 		for(i=0;i<maxi;i++)
@@ -98,10 +99,11 @@ int basicMF::train(){
 					pre=calculate(i,j);
 					err=ori-pre;
 					//std::cout<<"here"<<i<<j<<std::endl;
+					//err_1+=pow(err,2);
 					update(err,i,j);
-					err_1+=fabs(err);
 				}
-		err_1/=count;
+		//err_1=sqrt(err_1/count);
+		err_1=predict("ub.test");		
 		std::cout<<"Epoch:"<<epoch<<" the error is "<<err_1<<std::endl;
 		epoch++;
 	}
@@ -112,11 +114,11 @@ void basicMF::update(double err,int u_id,int i_id){
 	for(int i=0;i<num_fact;i++){
 		Item_feature[i_id][i]+=learning_rate*(err*User_feature[u_id][i]-lamda*Item_feature[i_id][i]);
 		User_feature[u_id][i]+=learning_rate*(err*Item_feature[i_id][i]-lamda*User_feature[u_id][i]);
-		bias_u[u_id]+=learning_rate*(err-lamda*bias_u[u_id]);
-		bias_i[i_id]+=learning_rate*(err-lamda*bias_i[i_id]);
 	}
+	bias_u[u_id]+=learning_rate*(err-lamda*bias_u[u_id]);
+	bias_i[i_id]+=learning_rate*(err-lamda*bias_i[i_id]);
 }
-int basicMF::predict(const char* inputFile) const{
+double basicMF::predict(const char* inputFile) const{
 	std::ifstream fin;
 	int u_id,i_id,r,t;
 	double err=0;
@@ -127,14 +129,15 @@ int basicMF::predict(const char* inputFile) const{
 	count=0;
 	while(!fin.eof()){
 		fin>>u_id>>i_id>>r>>t;
-		//err+=pow(r-calculate(u_id-1,i_id-1),2);
-		err+=fabs(r-calculate(u_id-1,i_id-1));
+		err+=pow(r-calculate(u_id-1,i_id-1),2);
+		//err+=fabs(r-calculate(u_id-1,i_id-1));
 		count++;
 	}
 	err/=count;
-	std::cout<<"Count:"<<count<<std::endl;
-	std::cout<<"Predict error:"<<err<<std::endl;
-	return 0;
+	//std::cout<<"Count:"<<count<<std::endl;
+	//std::cout<<"Predict error:"<<sqrt(err)<<std::endl;
+	fin.close();
+	return sqrt(err);
 }
 
 void basicMF::save(const char* outputFile) const{
