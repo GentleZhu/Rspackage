@@ -1,10 +1,11 @@
 #include "basicKNN.h"
-#include "basicSolver.cc"
 
 #include <cmath>
+#include <iostream>
+#include <fstream>
 
 const int k=10;
-basicKNN::basicKNN(const char* inputFile,int t):type(t),basicSolver(inputFile){
+basicKNN::basicKNN(const char* inputFile,int t):basicSolver(inputFile),type(t){
 	std::cout<<data->getUsercount()<<data->getItemcount()<<std::endl;
 }
 
@@ -34,7 +35,7 @@ void basicKNN::Init(){
 				D[j].push_back(i);
 }
 
-int basicKNN::train(){
+int basicKNN::train(const char* inputFile){
 	double sum=0;
 	for(int i=0;i<num_item;++i){
 		sum=0;
@@ -85,8 +86,8 @@ double basicKNN::predict(const char* inputFile) const{
 		fin>>u_id>>i_id>>r>>t;
 		memset(K_neighbor,0,sizeof(int)*(k+1));
 		//err+=pow(r-calculate(u_id-1,i_id-1),2);
-		err+=fabs(r-calculate(u_id-1,i_id-1));
-		std::cout<<err<<'\t';
+		err+=pow(r-calculate(u_id-1,i_id-1),2);
+		//std::cout<<err<<'\t';
 		/*if (isnan(err)){
 			std::cout<<u_id<<" "<<i_id<<std::endl;
 			std::cout<<calculate(u_id-1,i_id-1)<<std::endl;

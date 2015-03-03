@@ -1,15 +1,15 @@
-#include "rating.h"
+#include "rating_m.h"
 
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
-rating::rating(){
+
+rating_m::rating_m(){
 	user_count=0;
 	item_count=0;
 	ratings_count=0;
 }
 
-int rating::Init(const char* filepath){
+int rating_m::Init(const char* filepath){
 	std::ifstream fin;
 	int u_id,i_id,rt,tm;
 	//auto tmp;
@@ -48,47 +48,47 @@ int rating::Init(const char* filepath){
 	//memset(timestamp,0,sizeof(int)*user_count*item_count);
 	fin.clear();
 	fin.seekg(0,std::ios::beg);
-	std::cout<<count<<std::endl;
+	//std::cout<<count<<std::endl;
 	while(!fin.eof()){
 		fin>>u_id>>i_id>>rt>>tm;
 		ratings(u_id-1,i_id-1)=rt;
 		timestamp(u_id-1,i_id-1)=tm;
 		--count;
 	}
+    fin.close();
 	if (count)
 		return -2;
 	else
 		return 0;
-	fin.close();
 }
 
-int rating::getRating(const int u_id,const int i_id) const{
+int rating_m::getRating(const int u_id,const int i_id) const{
 	if (!(u_id<=user_count&&i_id<=max_item))
 		return -1;
 	else
 		return ratings(u_id-1,i_id-1);
 }
 
-int rating::getTime(const int u_id,const int i_id) const{
+int rating_m::getTime(const int u_id,const int i_id) const{
 	if (!(u_id<=user_count&&i_id<=max_item))
 		return -1;
 	else
 		return timestamp(u_id-1,i_id-1);
 }
 
-int rating::getUsercount() const{
+int rating_m::getUsercount() const{
 	return user_count;
 }
 
-int rating::getItemcount() const{
+int rating_m::getItemcount() const{
 	return max_item;
 }
 
-int rating::getRatingcount() const{
+int rating_m::getRatingcount() const{
 	return rating_count;
 }
 
-rating::~rating(){
+rating_m::~rating_m(){
 	//std::cout<<"should be last"<<std::endl;
 	user_id.clear();
 	item_id.clear();

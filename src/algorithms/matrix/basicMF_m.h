@@ -1,16 +1,16 @@
-#ifndef RSPACKAGE_ALGORITHMS_BASICMF_H_
-#define RSPACKAGE_ALGORITHMS_BASICMF_H_
+#ifndef RSPACKAGE_ALGORITHMS_MATRIX_BASICMF_H_
+#define RSPACKAGE_ALGORITHMS_MATRIX_BASICMF_H_
 
-#include "basicSolver.h"
+#include "basicSolver_m.h"
 
-class basicMF:public basicSolver
+class basicMF_m:public basicSolver_m
 {
 public:
-	basicMF(const char* inputFile,int n=12);
-	virtual ~basicMF();
+	basicMF_m(const char* inputFile,int n=12);
+	virtual ~basicMF_m();
 	virtual void Init();
-	virtual int train();
-	virtual int predict(const char* inputFile) const;
+	virtual int train(const char* inputFile=NULL);
+	virtual double predict(const char* inputFile) const;
 	virtual void load(const char* inputFile);
 	virtual void save(const char* outputFile) const;
 private:

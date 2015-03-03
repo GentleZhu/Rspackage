@@ -1,5 +1,5 @@
 #include "basicMF.h"
-#include "basicSolver.cc"
+//#include "basicSolver.cc"
 //#include "basicSolver.h"
 
 #include <cstdlib>
@@ -81,7 +81,7 @@ double basicMF::calculate(int u_id,int i_id) const{
 	return pre;
 }
 
-int basicMF::train(){
+int basicMF::train(const char* inputFile){
 	int epoch=0;
 	int i,j;
 	int ori;
@@ -99,11 +99,13 @@ int basicMF::train(){
 					pre=calculate(i,j);
 					err=ori-pre;
 					//std::cout<<"here"<<i<<j<<std::endl;
-					//err_1+=pow(err,2);
+					err_1+=pow(err,2);
 					update(err,i,j);
 				}
-		//err_1=sqrt(err_1/count);
-		err_1=predict("ub.test");		
+		if (inputFile)
+			err_1=predict(inputFile);
+		else
+			err_1=sqrt(err_1/count);	
 		std::cout<<"Epoch:"<<epoch<<" the error is "<<err_1<<std::endl;
 		epoch++;
 	}

@@ -1,9 +1,9 @@
 #ifndef RSPACKAGE_ALGORITHMS_BASICKNN_H_
 #define RSPACKAGE_ALGORITHMS_BASICKNN_H_
 
-#include "basicSolver.h"
-
 #include <vector>
+
+#include "basicSolver.h"
 
 class basicKNN:public basicSolver
 {	
@@ -11,7 +11,7 @@ public:
 	basicKNN(const char* inputFile,int t=0);
 	virtual ~basicKNN();
 	virtual void Init();
-	virtual int train();
+	virtual int train(const char* inputFile=NULL);
 	virtual double predict(const char* inputFile) const;
 	virtual void load(const char* inputFile);
 	virtual void save(const char* outputFile) const;

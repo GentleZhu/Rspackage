@@ -1,8 +1,6 @@
-//#include "data/matrix_form/rating.cc"
-//#include "data/rating.cc"
-//#include "algorithms/basicMF.cc"
-#include "algorithms/basicKNN.cc"
-//#include "algorithms/matrix_form/basicMF.cc"
+//#include "algorithms/basicMF.h"
+#include "algorithms/basicKNN.h"
+//#include "algorithms/matrix/basicMF_m.h"
 
 #include <iostream>
 using namespace std;

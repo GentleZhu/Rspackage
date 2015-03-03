@@ -2,7 +2,6 @@
 
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 rating::rating(){
 	user_count=0;
 	item_count=0;
@@ -46,7 +45,7 @@ int rating::Init(const char* filepath){
 	//memset(timestamp,0,sizeof(int)*user_count*item_count);
 	fin.clear();
 	fin.seekg(0,std::ios::beg);
-	std::cout<<count<<std::endl;
+	//std::cout<<count<<std::endl;
 	while(!fin.eof()){
 		fin>>u_id>>i_id>>rt>>tm;
 		ratings[u_id-1][i_id-1]=rt;

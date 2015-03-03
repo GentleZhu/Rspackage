@@ -1,5 +1,5 @@
-#include "basicMF.h"
-#include "basicSolver.cc"
+#include "basicMF_m.h"
+//#include "basicSolver_m.cc"
 //#include "basicSolver.h"
 
 #include <cstdlib>
@@ -8,15 +8,19 @@
 #include <fstream>
 #include <cstring>
 
-const double EPSIRON=0.1;
+/*const double EPSIRON=0.1;
 const int MAXN=20;
 const double lamda=0.005;
-const double learning_rate=0.003;
-basicMF::basicMF(const char* inputFile,int n):num_fact(n),basicSolver(inputFile){
+const double learning_rate=0.003;*/
+const double EPSIRON=0.05;
+const int MAXN=40;
+const double lamda=0.005;
+const double learning_rate=0.004;
+basicMF_m::basicMF_m(const char* inputFile,int n):num_fact(n),basicSolver_m(inputFile){
 	std::cout<<data->getUsercount()<<data->getItemcount()<<std::endl;
 }
 
-basicMF::~basicMF(){
+basicMF_m::~basicMF_m(){
 	/*for(int i=0;i<num_item;i++)
 		delete []Item_feature[i];
 	for(int i=0;i<num_user;i++)
@@ -27,10 +31,10 @@ basicMF::~basicMF(){
 	delete []bias_i;*/
 }
 
-void basicMF::load(const char* inputFile){
+void basicMF_m::load(const char* inputFile){
 	int flag;
 	delete data;
-	data=new rating();
+	data=new rating_m();
 	flag=data->Init(inputFile);
 	switch(flag){
 		case -1:std::cout<<"File not exist!"<<std::endl;break;
@@ -39,7 +43,7 @@ void basicMF::load(const char* inputFile){
 	}
 }
 
-void basicMF::Init(){
+void basicMF_m::Init(){
 	num_item=data->getItemcount();
 	num_user=data->getUsercount();
 	//Item_feature=new double*[num_item];
@@ -67,7 +71,7 @@ void basicMF::Init(){
 			User_feature(i,j)=rand()%100/100.0*(2*EPSIRON)-EPSIRON;
 }
 
-double basicMF::calculate(int u_id,int i_id) const{
+double basicMF_m::calculate(int u_id,int i_id) const{
 	double pre=0;
 	int j;
 	//pre=3;
@@ -86,7 +90,7 @@ double basicMF::calculate(int u_id,int i_id) const{
 	return pre;
 }
 
-int basicMF::train(){
+int basicMF_m::train(const char* inputFile){
 	int epoch=0;
 	int i,j;
 	int ori;
@@ -105,16 +109,20 @@ int basicMF::train(){
 					err=ori-pre;
 					//std::cout<<"here"<<i<<j<<std::endl;
 					update(err,i,j);
-					err_1+=fabs(err);
+					err_1+=pow(err,2);
 				}
-		err_1/=count;
+		
+		if (inputFile)
+			err_1=predict(inputFile);
+		else
+			err_1=sqrt(err_1/count);
 		std::cout<<"Epoch:"<<epoch<<" the error is "<<err_1<<std::endl;
 		epoch++;
 	}
 	return epoch;
 }
 
-void basicMF::update(double err,int u_id,int i_id){
+void basicMF_m::update(double err,int u_id,int i_id){
 	/*for(int i=0;i<num_fact;i++){
 		Item_feature[i_id][i]+=learning_rate*(err*User_feature[u_id][i]-lamda*Item_feature[i_id][i]);
 		User_feature[u_id][i]+=learning_rate*(err*Item_feature[i_id][i]-lamda*User_feature[u_id][i]);
@@ -126,7 +134,7 @@ void basicMF::update(double err,int u_id,int i_id){
 	bias_u(u_id)+=learning_rate*(err-lamda*bias_u(u_id));
 	bias_i(i_id)+=learning_rate*(err-lamda*bias_i(i_id));
 }
-int basicMF::predict(const char* inputFile) const{
+double basicMF_m::predict(const char* inputFile) const{
 	std::ifstream fin;
 	int u_id,i_id,r,t;
 	double err=0;
@@ -142,11 +150,11 @@ int basicMF::predict(const char* inputFile) const{
 		count++;
 	}
 	err/=count;
-	std::cout<<"Count:"<<count<<std::endl;
-	std::cout<<"Predict error:"<<err<<std::endl;
-	return 0;
+	//std::cout<<"Count:"<<count<<std::endl;
+	//std::cout<<"Predict error:"<<sqrt(err)<<std::endl;
+	return sqrt(err);
 }
 
-void basicMF::save(const char* outputFile) const{
+void basicMF_m::save(const char* outputFile) const{
 
 }
