@@ -131,15 +131,15 @@ double basicMF::predict(const char* inputFile) const{
 	count=0;
 	while(!fin.eof()){
 		fin>>u_id>>i_id>>r>>t;
-		err+=pow(r-calculate(u_id-1,i_id-1),2);
-		//err+=fabs(r-calculate(u_id-1,i_id-1));
+		//err+=pow(r-calculate(u_id-1,i_id-1),2);
+		err+=fabs(r-calculate(u_id-1,i_id-1));
 		count++;
 	}
 	err/=count;
 	//std::cout<<"Count:"<<count<<std::endl;
 	//std::cout<<"Predict error:"<<sqrt(err)<<std::endl;
 	fin.close();
-	return sqrt(err);
+	return (err);
 }
 
 void basicMF::save(const char* outputFile) const{
