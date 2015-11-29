@@ -2,10 +2,11 @@
 #define RSPACKAGE_ALGORITHMS_BASICSOLVER_H_
 
 #include "../data/rating.h"
+#include <cstddef>
 class basicSolver
 {
 public:
-	basicSolver(const char* inputFile);
+	basicSolver(const char* inputFile,const int mode=0);
 	virtual ~basicSolver();
 	virtual int train(const char* inputFile=NULL)=0;
 	virtual double predict(const char* inputFile) const=0;

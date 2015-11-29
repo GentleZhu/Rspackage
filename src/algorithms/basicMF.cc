@@ -7,12 +7,18 @@
 #include <cmath>
 #include <fstream>
 #include <cstring>
+#include <random>
+#include <algorithm>
+#include <omp.h>
+
+
 
 const double EPSIRON=0.05;
-const int MAXN=40;
+const int MAXN=20;
 const double lamda=0.005;
-const double learning_rate=0.004;
-basicMF::basicMF(const char* inputFile,int n):num_fact(n),basicSolver(inputFile){
+const double learning_rate=0.005;
+
+basicMF::basicMF(const char* inputFile,const int num_feat,const int batch_size):num_fact(num_feat),batch_size(batch_size),basicSolver(inputFile,0){
 	std::cout<<data->getUsercount()<<data->getItemcount()<<std::endl;
 }
 
@@ -52,29 +58,25 @@ void basicMF::Init(){
 		User_feature[i]=new double[num_fact];
 	for(int i=0;i<num_item;i++)
 		Item_feature[i]=new double[num_fact];
-	srand(time(NULL));
+	std::random_device rd;
+    std::mt19937 gen(rd());
+    // values near the mean are the most likely
+    // standard deviation affects the dispersion of generated values from the mean
+    std::normal_distribution<> d(0,EPSIRON);
 	for (int i=0;i<num_item;i++)
 		for (int j=0;j<num_fact;j++)
-			//Item_feature[i][j]=0;
-			Item_feature[i][j]=rand()%100/100.0*(2*EPSIRON)-EPSIRON;
+			//change it into Gaussian distribution
+			Item_feature[i][j]=std::round(d(gen));
 	for (int i=0;i<num_user;i++)
 		for (int j=0;j<num_fact;j++)
-			//User_feature[i][j]=0;
-			User_feature[i][j]=rand()%100/100.0*(2*EPSIRON)-EPSIRON;
+			User_feature[i][j]=std::round(d(gen));
 }
 
 double basicMF::calculate(int u_id,int i_id) const{
 	double pre=0;
 	int j;
 	pre=3+bias_u[u_id]+bias_i[i_id];//+sigma[item]*delta/(delta+rating_date-item_begin[item]);
-	/*if (isnan(pre)){
-		cout<<bias_u[user]<<' '<<bias_i[item]<<endl;
-		cout<<sigma[item]*delta/(delta+rating_date-item_begin[item])<<endl;
-		cout<<user<<item<<endl;
-		exit(0);
-	}*/
 	for (j=0;j<num_fact;j++)
-		//if (Item_feature[j][item]!=0&&User_feature[j][user]!=0)
 			pre+=Item_feature[i_id][j]*User_feature[u_id][j]; //transpose will get better local performance
 	if (pre>5) pre=5;
 	if (pre<1) pre=1;
@@ -83,25 +85,42 @@ double basicMF::calculate(int u_id,int i_id) const{
 
 int basicMF::train(const char* inputFile){
 	int epoch=0;
-	int i,j;
-	int ori;
-	double pre,err;
-	int maxi=data->getUsercount();
-	int maxj=data->getItemcount();
+	//int i,j;
+	double pre;
+	double *err;
+	int *user,*item;
+	user=new int[batch_size];
+	item=new int[batch_size];
+	err=new double[batch_size];
 	int count=data->getRatingcount();
+	int limited;
+	std::vector<record> *mat=data->getTrainpair();
 	double err_1=999,err_2=1000;
-	while(epoch<MAXN&&err_2-err_1>0.00001){
+	auto engine = std::default_random_engine{};
+	std::cout<<omp_get_num_procs()<<std::endl;
+	while(epoch<MAXN&&fabs(err_1-err_2)>0.00001){
 		err_2=err_1;
 		err_1=0;
-		for(i=0;i<maxi;i++)
-			for(j=0;j<maxj;j++)
-				if ((ori=data->getRating(i+1,j+1))){
-					pre=calculate(i,j);
-					err=ori-pre;
-					//std::cout<<"here"<<i<<j<<std::endl;
-					err_1+=pow(err,2);
-					update(err,i,j);
-				}
+		std::shuffle(mat->begin(), mat->end(), engine);
+		for (int i=0;i<mat->size();i+=batch_size){
+			if (i+batch_size>=mat->size())
+				limited=mat->size()-i-1;
+			else
+				limited=batch_size;
+			
+			//#pragma omp parallel for
+			for(int j=0;j<limited;++j){
+				user[j]=mat->at(i+j).user_id-1;
+				item[j]=mat->at(i+j).item_id-1;
+				pre=calculate(user[j],item[j]);
+				err[j]=mat->at(i+j).rating-pre;
+			}
+			for(int j=0;j<limited;++j){
+				err_1+=pow(err[j],2);
+			}
+			update(err,user,item);
+			
+		}
 		if (inputFile)
 			err_1=predict(inputFile);
 		else
@@ -109,20 +128,29 @@ int basicMF::train(const char* inputFile){
 		std::cout<<"Epoch:"<<epoch<<" the error is "<<err_1<<std::endl;
 		epoch++;
 	}
+	delete user;
+	delete item;
+	delete err;
 	return epoch;
 }
 
-void basicMF::update(double err,int u_id,int i_id){
-	for(int i=0;i<num_fact;i++){
-		Item_feature[i_id][i]+=learning_rate*(err*User_feature[u_id][i]-lamda*Item_feature[i_id][i]);
-		User_feature[u_id][i]+=learning_rate*(err*Item_feature[i_id][i]-lamda*User_feature[u_id][i]);
+void basicMF::update(double err[],int u_id[],int i_id[]){
+	//#pragma omp parallel for
+	for (int k = 0; k < batch_size; ++k){
+		//#pragma omp parallel for
+		for(int i=0;i<num_fact;i++){
+			Item_feature[i_id[k]][i]+=learning_rate*(err[k]*User_feature[u_id[k]][i]-lamda*Item_feature[i_id[k]][i]);
+			User_feature[u_id[k]][i]+=learning_rate*(err[k]*Item_feature[i_id[k]][i]-lamda*User_feature[u_id[k]][i]);
+		}
+		bias_u[u_id[k]]+=learning_rate*(err[k]-lamda*bias_u[u_id[k]]);
+		bias_i[i_id[k]]+=learning_rate*(err[k]-lamda*bias_i[i_id[k]]);
 	}
-	bias_u[u_id]+=learning_rate*(err-lamda*bias_u[u_id]);
-	bias_i[i_id]+=learning_rate*(err-lamda*bias_i[i_id]);
 }
+
 double basicMF::predict(const char* inputFile) const{
 	std::ifstream fin;
-	int u_id,i_id,r,t;
+	int u_id,i_id,t;
+	double r;
 	double err=0;
 	int count;
 	fin.open(inputFile,std::ios::in);
@@ -131,15 +159,12 @@ double basicMF::predict(const char* inputFile) const{
 	count=0;
 	while(!fin.eof()){
 		fin>>u_id>>i_id>>r>>t;
-		//err+=pow(r-calculate(u_id-1,i_id-1),2);
-		err+=fabs(r-calculate(u_id-1,i_id-1));
-		count++;
+		err+=pow(r-calculate(u_id-1,i_id-1),2);
+		++count;
 	}
 	err/=count;
-	//std::cout<<"Count:"<<count<<std::endl;
-	//std::cout<<"Predict error:"<<sqrt(err)<<std::endl;
 	fin.close();
-	return (err);
+	return sqrt(err);
 }
 
 void basicMF::save(const char* outputFile) const{

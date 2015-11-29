@@ -6,20 +6,30 @@
 using namespace std;
 int main(int argc, char const *argv[])
 {
-	basicSolver* s=new basicMF("ua.base",40);
+	
+	basicSolver* s=new basicMF("./files/ml_1m.train",40,100000);
 	s->Init();
+	clock_t t1=clock();
 	s->train();
-	cout<<"Predict error:"<<s->predict("ua.test")<<endl;
+	clock_t t2=clock();
+	cout<<"Predict error:"<<s->predict("./files/ml_1m.test")<<endl;
 	delete s;
-	/*basicSolver* s=new basicKNN("ua.base");
-	s->Init();
-	s->train();
-	cout<<"Predict error:"<<s->predict("ua.test")<<endl;
-	delete s;*/
-	/*basicSolver_m* s=new basicMF_m("ua.base",40);
-	s->Init();
-	s->train();
-	cout<<"Predict error:"<<s->predict("ua.test")<<endl;
-	delete s;*/
+	
+	cout<<"Timing:"<<(double)(t2-t1)/CLOCKS_PER_SEC<<endl;
+	/*basicSolver* p=new basicKNN("./files/ml_1m.train");
+	p->Init();
+	p->train();
+	cout<<"Predict error:"<<p->predict("./files/ml_1m.test")<<endl;
+	delete p;*/
+	//Eigen::initParallel();
+	basicSolver_m* q=new basicMF_m("./files/ml_1m.train",40,100000);
+	q->Init();
+	clock_t t3=clock();
+	q->train();
+	clock_t t4=clock();
+	cout<<"Predict error:"<<q->predict("./files/ml_1m.test")<<endl;
+	delete q;
+	
+	cout<<"Timing:"<<(double)(t4-t3)/CLOCKS_PER_SEC<<endl;
 	return 0;
 }

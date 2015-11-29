@@ -2,6 +2,7 @@
 #define RSPACKAGE_ALGORITHMS_MATRIX_BASICSOLVER_H_
 
 #include "../../data/matrix/rating_m.h"
+#include <cstddef>
 
 class basicSolver_m
 {

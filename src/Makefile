@@ -1,7 +1,7 @@
 #
-CXX = g++
+CXX = g++-4.9
 #
-CFLAGS = -c -Wall
+CFLAGS = -c
 LDFLAGS= 
 #
 OBJ = rating.o rating_m.o basicSolver.o basicSolver_m.o basicMF.o basicMF_m.o basicKNN.o main.o
@@ -18,7 +18,7 @@ basicKNN.o: ./algorithms/basicKNN.cc
 main.o: main.cc
 
 $(OBJ): 
-	$(CXX) $(CFLAGS) -o $@ $(filter %.cc %.c, $^)
+	$(CXX) $(CFLAGS) -o $@ $(filter %.cc %.c, $^) -Ofast -std=c++11 -fopenmp
 
 $(BIN): $(OBJ)
-	$(CXX) $(LDFLAGS) $(OBJ) -o $@
+	$(CXX) $(LDFLAGS) $(OBJ) -o $@ -Ofast -std=c++11 -fopenmp

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "basicSolver.h"
+#include <cstddef>
 
 class basicKNN:public basicSolver
 {	

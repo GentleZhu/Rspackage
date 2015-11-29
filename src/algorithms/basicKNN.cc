@@ -3,9 +3,10 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 const int k=10;
-basicKNN::basicKNN(const char* inputFile,int t):basicSolver(inputFile),type(t){
+basicKNN::basicKNN(const char* inputFile,int t):basicSolver(inputFile,1),type(t){
 	std::cout<<data->getUsercount()<<data->getItemcount()<<std::endl;
 }
 
@@ -16,9 +17,11 @@ basicKNN::~basicKNN(){
 	for(int i=0;i<num_item;i++)
 		delete []W[i];
 	delete []W;
+	delete []K_neighbor;
 }
 
 void basicKNN::Init(){
+	int user,item;
 	num_item=data->getItemcount();
 	num_user=data->getUsercount();
 	W=new double*[num_item];
@@ -26,9 +29,15 @@ void basicKNN::Init(){
 	mean=new double[num_item];
 	RSE=new double[num_item];
 	K_neighbor=new int[k+1];
-	memset(K_neighbor,0,sizeof(int)*(k+1));
+	std::vector<record> *mat=data->getTrainpair();
+	std::memset(K_neighbor,0,sizeof(int)*(k+1));
 	for (int i=0;i<num_item;i++)
 		W[i]=new double[num_item];
+	/*for (int i=0;i<mat->size();++i){
+		user=mat->at(i).user_id-1;
+		item=mat->at(i).item_id-1;
+		D[item].push_back(user);
+	}*/
 	for (int i=0;i<num_user;i++)
 		for(int j=0;j<num_item;j++)
 			if (data->getRating(i+1,j+1))
@@ -84,7 +93,7 @@ double basicKNN::predict(const char* inputFile) const{
 	count=0;
 	while(!fin.eof()){
 		fin>>u_id>>i_id>>r>>t;
-		memset(K_neighbor,0,sizeof(int)*(k+1));
+		std::memset(K_neighbor,0,sizeof(int)*(k+1));
 		//err+=pow(r-calculate(u_id-1,i_id-1),2);
 		err+=pow(r-calculate(u_id-1,i_id-1),2);
 		//std::cout<<err<<'\t';
