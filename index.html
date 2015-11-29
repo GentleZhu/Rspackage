@@ -61,9 +61,9 @@
 <h2>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
 <ul>
-<li>Adaptability</li>
-<li>Memory saving mode</li>
-<li>Partially parallellized by Openmp</li>
+<li>Adaptability. Base class basic_solver effectively contains and protects training data, any algorithms could derive from it like basicKNN and Matrix factorization</li>
+<li>Memory saving mode. Storing vector of training sample rather than whole sparse matrix</li>
+<li>Partially paralleled by Openmp. Support mini-batch SGD in matrix factorization i.e.parallel gradient computing </li>
 </ul>
 
 <h2>
