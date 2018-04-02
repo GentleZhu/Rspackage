@@ -1,13 +1,7 @@
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-</script>
-<script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
 # Rspackage
 Rspackage is a simple, easy-to-use&develop software/libraray for Recommender System train and prediction. Currently, this package just start, and more features and algorithms will be added soon.
 
-##Table of Cotents
+## Table of Cotents
 
 - Installation and Data Format
 - Algorithms
@@ -16,7 +10,7 @@ Rspackage is a simple, easy-to-use&develop software/libraray for Recommender Sys
 - Eigen Version
 - Further development
 
-##Installation and Data Format
+## Installation and Data Format
 
 On Unix-like system, type `make` to build main(sample program).
 
@@ -26,7 +20,7 @@ The format of training validation and testing data file is:
 
 ```<user>  <rating>  <time>```
 
-##Algorithms
+## Algorithms
 
 - Matrix Factorizaion
 - Item-based KNN
@@ -35,14 +29,14 @@ The format of training validation and testing data file is:
 ###Matrix Factorization
 $$ \hat{r}_{u,i}=\bar{r}+b_u^{user}+b_i^{item}+\rm{p_u}^T\rm{q_i}$$
 
-###Item-based KNN
+### Item-based KNN
 
 $$ \hat{r}\_{u,i}=\frac{\sum\_{j\in G_k(u,i)} w\_{ij}\cdot r\_{uj}}{\sum\_{j\in G_k(u,i)} w\_{ij}}  $$
 
-###Neural network
+### Neural network
 Comming soon...
 
-##Usage
+## Usage
 
 The sample program named main.cc is shown as follows:
 
@@ -71,7 +65,7 @@ Class basicMF provides basic Matrix Factorization function, and the train set an
 
 Class basicKNN provides item-based KNN algorithm.
 
-##Examples
+## Examples
 __Result on Movielens-100k__
 
 Algorithms   | MAE           | RMSE
@@ -88,7 +82,7 @@ Rspackage involves a lot of matrix operations, So it provides a matrix version.
 
 The solver basicMF_m is implemented with Eigen library, it looks pretty but a littile time consuming than original version, although it runs faster than matlab, python.
 
-##Further Development
+## Further Development
 
 Now I am ready to add blending techniques and RBM methods into Rspackage, which is common in competitions. 
 
