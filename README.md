@@ -1,7 +1,7 @@
 # Rspackage
 Rspackage is a simple, easy-using developing software/library for Recommender System to train and predict. 
 
-More features and algorithms will be added soon.
+**More features and algorithms will be added soon.**
 
 ## Table of Cotents
 
