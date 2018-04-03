@@ -1,5 +1,7 @@
 # Rspackage
-Rspackage is a simple, easy-to-use&develop software/libraray for Recommender System train and prediction. Currently, this package just start, and more features and algorithms will be added soon.
+Rspackage is a simple, easy-using developing software/library for Recommender System to train and predict. 
+
+More features and algorithms will be added soon.
 
 ## Table of Cotents
 
@@ -14,7 +16,7 @@ Rspackage is a simple, easy-to-use&develop software/libraray for Recommender Sys
 
 On Unix-like system, type `make` to build main(sample program).
 
-On other systems, Visiual Stdio/Xcode can directly build project on Rspackage.
+On other systems, Visiual Stdio/Xcode can directly build the project on Rspackage.
 
 The format of training validation and testing data file is:
 
@@ -38,7 +40,7 @@ Comming soon...
 
 ## Usage
 
-The sample program named main.cc is shown as follows:
+The sample program named main.cc is shown below:
 
 ```
 #include "algorithms/basicMF.h"
@@ -61,9 +63,9 @@ int main(int argc, char const *argv[])
 }
 ```
 
-Class basicMF provides basic Matrix Factorization function, and the train set and number of features are initialized by Constructor.
+Class basicMF provides basic Matrix Factorization function. The train set and the number of features are initialized by Constructor.
 
-Class basicKNN provides item-based KNN algorithm.
+Class basicKNN provides the item-based KNN algorithm.
 
 ## Examples
 __Result on Movielens-100k__
@@ -76,11 +78,11 @@ basicKNN     | 0.772263      | 0.981548
 More datasets will be tested.
 
 ##Eigen Version
-Rspackage involves a lot of matrix operations, So it provides a matrix version.
+Rspackage involves a lot of matrix operations, so it provides a matrix version.
 
 [**Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms.**](http://eigen.tuxfamily.org/index.php?title=Main_Page)
 
-The solver basicMF_m is implemented with Eigen library, it looks pretty but a littile time consuming than original version, although it runs faster than matlab, python.
+The solver basicMF_m is implemented with Eigen library, it looks pretty but is a little time consuming than original version, but it still runs faster than matlab and python.
 
 ## Further Development
 
